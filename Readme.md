@@ -1,3 +1,3 @@
-# Despliegue del proyecto mejorado en: 
+# Despliegue del proyecto en: 
 
-[Cotizador](https://ventalibros.netlify.app)
+[VentaLibros](https://ventalibros.netlify.app)
