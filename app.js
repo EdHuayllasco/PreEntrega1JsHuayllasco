@@ -89,36 +89,81 @@ const listaLibros = [
         cantidad: 4
     }
 ];
-var pedidos = []
+let pedidos = []
+let lista_pesosArg = []
+let lista_pesosMex = []
 //HACEMOS UN LOOP PARA BRINDAR OPCIONES Y ESTAR EN LA APLICACION HASTA APRETAR 4
-do{
-    var opcion = prompt(
-        "Ingresa 1 Si desea listar los libros disponibles \n Ingresa 2 Si desea comprar un articulo \n Ingresa 3 Mostrar tu carrito de compra \n Ingresa 4 si deseas salir de la aplicacion"
-    )
-    opcion = parseInt(opcion);
-    if(opcion === 1){
-        mostrar_listado();
-    } else if (opcion === 2){
-        datos();
-    } else if (opcion === 3){
-        mostrar_carrito();
-    }
-}while(opcion === 1 || opcion === 2 || opcion === 3)
+presentacion();
+function presentacion(){
+    mostrar_divisas();
+    do{
+        var opcion = prompt(
+            "Ingresa 1 Si desea listar los libros disponibles en soles \n Ingresa 2 Si desea comprar un articulo \n Ingresa 3 Mostrar tu carrito de compra \n Ingresa 4 para hacer la conversion a alguna modena \n Ingresa 5 si deseas salir de la aplicacion"
+        )
+        opcion = parseInt(opcion);
+        if(opcion === 1){
+            mostrar_listado(listaLibros);
+        } else if (opcion === 2){
+            datos();
+        } else if (opcion === 3){
+            mostrar_carrito();
+        } else if(opcion ===4){
+            let moneda = prompt('Ingrese el tipo de cambio que desea ver Arg o Mex');
+            if(moneda === 'Arg'){
+                mostrar_listado(lista_pesosArg);
+            }else if(moneda === 'Mex'){
+                mostrar_listado(lista_pesosArg);
+            }else{
+                alert('Opcion invalida');
+            }
+        }
+        else if(opcion ===5){
+            alert('Gracias por su visita');
+        }
+        else{
+            alert("Has ingresado una opcion incorrecta")
+        }
+    }while(opcion === 1 || opcion === 2 || opcion === 3 || opcion===4)
+}
+//FUNCION MOSTRAR DIVISAS
+function mostrar_divisas(){
+    lista_pesosArg = listaLibros.map(libro => {
+        return {
+            ...libro,
+            precio_fisico: libro.precio_fisico * 64,
+            precio_pdf: libro.precio_pdf * 64
+        };
+    })
+    lista_pesosMex = listaLibros.map(libro => {
+        return {
+            ...libro,
+            precio_fisico: libro.precio_fisico * 5,
+            precio_pdf: libro.precio_pdf * 5
+        };
+    })
+}
 
 //FUNCION QUE MUESTRA EL LISTADO MEDIANTE ALERT
-function mostrar_listado(){
-    for (let i = 0; i < listaLibros.length; i++) {
-        alert(`${listaLibros[i].nombre} \n
-                Precio Fisico : ${listaLibros[i].precio_fisico} \n
-                Precio Pdf : ${listaLibros[i].precio_pdf} \n
-                Cantidad Disponible : ${listaLibros[i].cantidad}
+function mostrar_listado(lista){
+    lista.forEach(libro =>{
+        alert(`${libro.nombre} \n
+                Precio Fisico : ${libro.precio_fisico} \n
+                Precio Pdf : ${libro.precio_pdf} \n
+                Cantidad Disponible : ${libro.cantidad}
         `)
-    }
+    })
 }
 // PEDIMOS LOS DATOS, MEDIANTE PROMPTS
 function datos(){
     var nombre = prompt("Ingrese el nombre del libro que busca");
     var curso_datos = listaLibros.filter(curso=> curso.nombre === nombre)[0];
+    var tipo_moneda = prompt("Ingrese el tipo de cambio soles/pesosMex/pesosArg");
+    if(tipo_moneda === 'pesosArg'){
+        curso_datos.precio_fisico = curso_datos.precio_fisico * 64;
+        curso_datos.precio_pdf = curso_datos.precio_pdf * 64;
+        curso_datos.precio_fisico = curso_datos.precio_fisico * 5;
+        curso_datos.precio_pdf = curso_datos.precio_pdf * 5;
+    }
     var costo_total = 0;
     if(listaLibros.some(curso=> curso.nombre === nombre)){
         var tipo = prompt("Ingrese la version del libro que desea adquirir fisico/pdf");
@@ -127,7 +172,7 @@ function datos(){
             costo_total = cantidad * curso_datos.precio_fisico;
             
         }else if(tipo === "pdf" && cantidad <= curso_datos.cantidad){
-            costo_total = curso_datos.cantidad * curso_datos.precio_pdf;
+            costo_total = cantidad * curso_datos.precio_pdf;
         }else {
             alert('Ingreso Una Opcion de adquisicion errada o no tenemos la cantidad, revise la lista')
             return;
@@ -149,16 +194,16 @@ function mostrar_carrito(){
     if(pedidos.length === 0){
         alert("Tu carrito se encuentra vacio")
     }else{
-        for (let i = 0; i < pedidos.length; i++) {
-            alert(`Tienes el pedido de : \n ${pedidos[i].nombre} - Cantidad : ${pedidos[i].cantidad} - Total : ${pedidos[i].precio_total} `)
-        }
+        pedidos.forEach(pedido => {
+            alert(`Tienes el pedido de : \n ${pedido.nombre} - Cantidad : ${pedido.cantidad} - Total : ${pedido.precio_total} `)
+        })
     }
 }
 // ACTUALIZAMOS LAS CANTIDADES
 function actualizar_lista(curso_datos, cantidad){
-    for (let i = 0; i < listaLibros.length; i++) {
-        if(listaLibros[i].nombre === curso_datos.nombre){
-            listaLibros[i].cantidad -= cantidad; 
+    listaLibros.forEach(libro => { 
+        if(libro.nombre === curso_datos.nombre){
+            libro.cantidad -= cantidad; 
         }
-    }
+    })
 }
